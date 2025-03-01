@@ -27,14 +27,17 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
 
   return (
     <div className="space-y-6">
-      <div className="p-4 bg-white rounded-lg shadow">
+      <div className="p-4 bg-background-primary rounded-lg shadow dark:shadow-gray-800 transition-all duration-300 hover:shadow-xl dark:hover:shadow-gray-700/50 animate-slide-in">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-2xl font-bold">
-            {stockData.symbol} - ₹{stockData.currentPrice.toFixed(2)}
+            <span className="text-accent-primary">{stockData.symbol}</span> -{" "}
+            <span className="text-text-primary">
+              ₹{stockData.currentPrice.toFixed(2)}
+            </span>
           </h2>
           <button
             onClick={handleDownload}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-accent-primary text-white rounded hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -51,8 +54,13 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
             Download Report
           </button>
         </div>
-        <div className={`text-xl font-semibold ${getRecommendationColor()}`}>
-          Recommendation: {recommendation}
+        <div
+          className={`text-xl font-semibold ${getRecommendationColor()} animate-fade-in`}
+        >
+          Recommendation:{" "}
+          <span className="border-b-2 border-current pb-1">
+            {recommendation}
+          </span>
         </div>
       </div>
 

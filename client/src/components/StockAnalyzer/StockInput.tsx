@@ -49,7 +49,7 @@ function StockInput({ onAnalyze, isLoading }: StockInputProps) {
       </form>
 
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-        {["AAPL", "GOOGL", "MSFT", "AMZN"].map((stock) => (
+        {["RELIANCE", "ASIANPAINT", "TCS", "HDFCBANK"].map((stock) => (
           <button
             key={stock}
             onClick={() => setSymbol(stock)}

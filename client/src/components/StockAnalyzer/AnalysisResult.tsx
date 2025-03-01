@@ -2,6 +2,7 @@ import { AnalysisResult as AnalysisResultType } from "../../types";
 import { generatePDF } from "../../services/pdfGenerator";
 import TechnicalIndicators from "./TechnicalIndicators";
 import AIPrediction from "./AIPrediction";
+import { useTheme } from "../../context/ThemeContext";
 
 interface AnalysisResultProps {
   result: AnalysisResultType;
@@ -9,15 +10,23 @@ interface AnalysisResultProps {
 
 const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
   const { recommendation, stockData, analysis } = result;
+  const { theme } = useTheme();
+
+  // Calculate derived values safely
+  const ma50Delta =
+    ((stockData.currentPrice - stockData.movingAverage50) /
+      stockData.movingAverage50) *
+    100;
+  const volumeRatio = stockData.volume / stockData.averageVolume;
 
   const getRecommendationColor = () => {
     switch (recommendation) {
       case "Buy":
-        return "text-green-600";
+        return "text-green-600 dark:text-green-500";
       case "Sell":
-        return "text-red-600";
+        return "text-red-600 dark:text-red-500";
       default:
-        return "text-yellow-600";
+        return "text-yellow-600 dark:text-yellow-500";
     }
   };
 
@@ -25,49 +34,130 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
     generatePDF(result);
   };
 
+  const MetricCard = ({
+    title,
+    value,
+    description,
+  }: {
+    title: string;
+    value: string;
+    description: string;
+  }) => (
+    <div className="bg-background-secondary rounded-xl p-6 hover:transform hover:scale-105 transition-all duration-300 shadow dark:shadow-gray-800">
+      <h3 className="text-text-secondary text-sm font-medium mb-2">{title}</h3>
+      <p className="text-text-primary text-2xl font-bold mb-2">{value}</p>
+      <p className="text-text-secondary text-sm">{description}</p>
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      <div className="p-4 bg-background-primary rounded-lg shadow dark:shadow-gray-800 transition-all duration-300 hover:shadow-xl dark:hover:shadow-gray-700/50 animate-slide-in">
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-2xl font-bold">
-            <span className="text-accent-primary">{stockData.symbol}</span> -{" "}
-            <span className="text-text-primary">
-              ₹{stockData.currentPrice.toFixed(2)}
-            </span>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header Section */}
+      <div className="card bg-background-secondary border border-accent-secondary/20 animate-slide-in">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+          <h2 className="text-2xl font-bold text-text-primary">
+            <span className="text-accent-primary">{stockData.symbol}</span> -
+            Analysis
           </h2>
           <button
             onClick={handleDownload}
-            className="px-4 py-2 bg-accent-primary text-white rounded hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+            className="button-primary flex items-center space-x-2 transition-all duration-300 transform hover:scale-105"
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
               <path
-                fillRule="evenodd"
-                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
               />
             </svg>
-            Download Report
+            <span>Download Report</span>
           </button>
         </div>
-        <div
-          className={`text-xl font-semibold ${getRecommendationColor()} animate-fade-in`}
-        >
-          Recommendation:{" "}
-          <span className="border-b-2 border-current pb-1">
+
+        <div className="flex items-center space-x-4">
+          <span className="text-lg font-semibold text-text-secondary">
+            Recommendation:
+          </span>
+          <span
+            className={`text-2xl font-bold ${getRecommendationColor()} border-b-2 border-current pb-1 animate-fade-in`}
+          >
             {recommendation}
           </span>
         </div>
       </div>
 
-      <TechnicalIndicators stockData={stockData} analysis={analysis} />
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MetricCard
+          title="RSI Analysis"
+          value={stockData.rsi.toFixed(2)}
+          description={analysis.rsiAnalysis}
+        />
 
+        <MetricCard
+          title="MACD Analysis"
+          value={stockData.macd.toFixed(2)}
+          description={analysis.macdAnalysis}
+        />
+
+        <MetricCard
+          title="Price Analysis"
+          value={`₹${stockData.currentPrice.toFixed(2)}`}
+          description={analysis.maAnalysis}
+        />
+
+        <MetricCard
+          title="Volume Analysis"
+          value={`${volumeRatio.toFixed(2)}x`}
+          description={analysis.volumeAnalysis}
+        />
+      </div>
+
+      {/* Bollinger Bands Analysis */}
+      <div
+        className="card bg-background-secondary border border-accent-secondary/20 transition-all duration-300 hover:shadow-xl dark:hover:shadow-gray-700/50 animate-fade-in"
+        style={{ animationDelay: "0.5s" }}
+      >
+        <h3 className="text-lg font-semibold text-accent-primary mb-4">
+          Bollinger Bands Analysis
+        </h3>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary">Upper Band</span>
+            <span className="text-text-primary font-medium text-green-600 dark:text-green-400">
+              ₹{stockData.bollingerBands.upper.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary">Current Price</span>
+            <span className="text-text-primary font-medium">
+              ₹{stockData.currentPrice.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary">Lower Band</span>
+            <span className="text-text-primary font-medium text-red-600 dark:text-red-400">
+              ₹{stockData.bollingerBands.lower.toFixed(2)}
+            </span>
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-text-secondary">{analysis.bollingerAnalysis}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* AI Prediction */}
       {analysis.aiPrediction && (
-        <AIPrediction prediction={analysis.aiPrediction} />
+        <AIPrediction
+          prediction={analysis.aiPrediction}
+          currentPrice={stockData.currentPrice}
+        />
       )}
     </div>
   );

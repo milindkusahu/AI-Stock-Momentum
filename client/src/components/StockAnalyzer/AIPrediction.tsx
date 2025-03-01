@@ -2,35 +2,68 @@ import { AIPrediction as AIPredictionType } from "../../types";
 
 interface AIPredictionProps {
   prediction: AIPredictionType;
+  currentPrice?: number;
 }
 
-const AIPrediction: React.FC<AIPredictionProps> = ({ prediction }) => {
+const AIPrediction: React.FC<AIPredictionProps> = ({
+  prediction,
+  currentPrice,
+}) => {
+  const getRecommendationColor = (recommendation: string) => {
+    const colors = {
+      Buy: "text-green-600 dark:text-green-500",
+      Sell: "text-red-600 dark:text-red-500",
+      Hold: "text-yellow-600 dark:text-yellow-500",
+    };
+    return (
+      colors[recommendation as keyof typeof colors] ||
+      "text-yellow-600 dark:text-yellow-500"
+    );
+  };
+
+  const getPriceChangeColor = () => {
+    if (!currentPrice || !prediction.shortTermTarget) return "";
+    return prediction.shortTermTarget > currentPrice
+      ? "text-green-600 dark:text-green-400"
+      : "text-red-600 dark:text-red-400";
+  };
+
+  const calculatePriceChange = () => {
+    if (!currentPrice || !prediction.shortTermTarget) return null;
+    const change =
+      ((prediction.shortTermTarget - currentPrice) / currentPrice) * 100;
+    return change.toFixed(2);
+  };
+
+  const priceChange = calculatePriceChange();
+
   return (
     <div
-      className="p-4 bg-background-primary rounded-lg shadow dark:shadow-gray-800 transition-all duration-300 hover:shadow-xl dark:hover:shadow-gray-700/50 animate-fade-in"
+      className="card bg-background-secondary border border-accent-secondary/20 transition-all duration-300 hover:shadow-xl dark:hover:shadow-gray-700/50 animate-fade-in"
       style={{ animationDelay: "0.6s" }}
     >
-      <h2 className="text-xl font-bold mb-4 text-accent-primary border-b border-accent-secondary pb-2">
-        AI Analysis
-      </h2>
+      <h3 className="text-lg font-semibold text-accent-primary mb-4 border-b border-accent-secondary pb-2">
+        AI Prediction
+      </h3>
 
       <div className="space-y-4">
-        <div className="animate-fade-in" style={{ animationDelay: "0.7s" }}>
-          <h3 className="font-semibold mb-2 text-accent-primary">Prediction</h3>
-          <p className="text-lg bg-accent-secondary/10 p-3 rounded-lg border-l-4 border-accent-primary">
+        <div
+          className="flex items-center justify-between animate-fade-in"
+          style={{ animationDelay: "0.7s" }}
+        >
+          <span className="text-text-secondary">Prediction</span>
+          <span
+            className={`font-bold ${getRecommendationColor(
+              prediction.prediction
+            )}`}
+          >
             {prediction.prediction}
-          </p>
+          </span>
         </div>
 
         <div className="animate-fade-in" style={{ animationDelay: "0.8s" }}>
-          <h3 className="font-semibold mb-2 text-accent-primary">Confidence</h3>
-          <div className="relative w-full h-4 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
-            <div
-              className="absolute h-full bg-accent-primary transition-all duration-1000 ease-out rounded"
-              style={{ width: `${prediction.confidence}%` }}
-            />
-          </div>
-          <p className="mt-1 text-sm text-text-secondary">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-text-secondary">Confidence</span>
             <span
               className={`font-medium ${
                 prediction.confidence > 70
@@ -41,40 +74,43 @@ const AIPrediction: React.FC<AIPredictionProps> = ({ prediction }) => {
               }`}
             >
               {prediction.confidence}%
-            </span>{" "}
-            confidence
-          </p>
+            </span>
+          </div>
+          <div className="relative w-full h-4 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
+            <div
+              className="absolute h-full bg-accent-primary transition-all duration-1000 ease-out rounded"
+              style={{ width: `${prediction.confidence}%` }}
+            />
+          </div>
         </div>
 
         {prediction.shortTermTarget && (
-          <div className="animate-fade-in" style={{ animationDelay: "0.9s" }}>
-            <h3 className="font-semibold mb-2 text-accent-primary">
-              Target Price
-            </h3>
-            <p className="text-lg">
-              <span className="font-medium text-accent-primary">
+          <div
+            className="flex items-center justify-between animate-fade-in"
+            style={{ animationDelay: "0.9s" }}
+          >
+            <span className="text-text-secondary">Price Target</span>
+            <div className="flex items-center">
+              <span className="font-medium text-text-primary">
                 ₹{prediction.shortTermTarget.toFixed(2)}
               </span>
-              {prediction.priceChange && (
-                <span
-                  className={`text-sm ml-2 ${
-                    prediction.priceChange > 0
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  ({prediction.priceChange > 0 ? "+" : ""}
-                  {prediction.priceChange}%)
+              {priceChange && (
+                <span className={`ml-2 text-sm ${getPriceChangeColor()}`}>
+                  ({priceChange > 0 ? "+" : ""}
+                  {priceChange}%)
                 </span>
               )}
-            </p>
+            </div>
           </div>
         )}
 
-        <div className="animate-fade-in" style={{ animationDelay: "1s" }}>
-          <h3 className="font-semibold mb-2 text-accent-primary">
+        <div
+          className="space-y-2 animate-fade-in"
+          style={{ animationDelay: "1s" }}
+        >
+          <h4 className="text-sm font-medium text-text-secondary">
             Supporting Factors
-          </h3>
+          </h4>
           <ul className="space-y-2">
             {prediction.supportingFactors.map((factor, index) => (
               <li key={index} className="flex items-start">
@@ -94,14 +130,19 @@ const AIPrediction: React.FC<AIPredictionProps> = ({ prediction }) => {
                     />
                   </svg>
                 </span>
-                <span className="text-text-secondary">{factor}</span>
+                <span className="text-text-primary">{factor}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="animate-fade-in" style={{ animationDelay: "1.1s" }}>
-          <h3 className="font-semibold mb-2 text-accent-primary">Risks</h3>
+        <div
+          className="space-y-2 animate-fade-in"
+          style={{ animationDelay: "1.1s" }}
+        >
+          <h4 className="text-sm font-medium text-text-secondary">
+            Risk Factors
+          </h4>
           <ul className="space-y-2">
             {prediction.risks.map((risk, index) => (
               <li key={index} className="flex items-start">
@@ -121,7 +162,7 @@ const AIPrediction: React.FC<AIPredictionProps> = ({ prediction }) => {
                     />
                   </svg>
                 </span>
-                <span className="text-text-secondary">{risk}</span>
+                <span className="text-text-primary">{risk}</span>
               </li>
             ))}
           </ul>

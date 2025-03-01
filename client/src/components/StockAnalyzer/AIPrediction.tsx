@@ -36,6 +36,7 @@ const AIPrediction: React.FC<AIPredictionProps> = ({
   };
 
   const priceChange = calculatePriceChange();
+  const priceChangeNum = priceChange ? parseFloat(priceChange) : 0;
 
   return (
     <div
@@ -96,7 +97,7 @@ const AIPrediction: React.FC<AIPredictionProps> = ({
               </span>
               {priceChange && (
                 <span className={`ml-2 text-sm ${getPriceChangeColor()}`}>
-                  ({priceChange > 0 ? "+" : ""}
+                  ({priceChangeNum > 0 ? "+" : ""}
                   {priceChange}%)
                 </span>
               )}

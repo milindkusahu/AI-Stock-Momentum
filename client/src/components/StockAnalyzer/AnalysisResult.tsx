@@ -1,8 +1,6 @@
 import { AnalysisResult as AnalysisResultType } from "../../types";
 import { generatePDF } from "../../services/pdfGenerator";
-import TechnicalIndicators from "./TechnicalIndicators";
 import AIPrediction from "./AIPrediction";
-import { useTheme } from "../../context/ThemeContext";
 
 interface AnalysisResultProps {
   result: AnalysisResultType;
@@ -10,13 +8,8 @@ interface AnalysisResultProps {
 
 const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
   const { recommendation, stockData, analysis } = result;
-  const { theme } = useTheme();
 
   // Calculate derived values safely
-  const ma50Delta =
-    ((stockData.currentPrice - stockData.movingAverage50) /
-      stockData.movingAverage50) *
-    100;
   const volumeRatio = stockData.volume / stockData.averageVolume;
 
   const getRecommendationColor = () => {

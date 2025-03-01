@@ -46,7 +46,7 @@ export const generatePDF = (result: AnalysisResult) => {
       margin,
       8
     );
-    yPosition = 15;
+    yPosition = 25; // Increased from 15 to 25 to add more gap
   }
 
   // Cover Page
@@ -92,7 +92,7 @@ export const generatePDF = (result: AnalysisResult) => {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text(stockData.symbol, pageWidth / 2, 45, { align: "center" });
+    doc.text(stockData.symbol, pageWidth / 2, 44, { align: "center" }); // Changed from 45 to 44 to center vertically
 
     // Title
     yPosition = headerHeight + 20;
@@ -415,7 +415,8 @@ export const generatePDF = (result: AnalysisResult) => {
     // Analysis text
     doc.setFontSize(10);
     doc.setTextColor(80, 80, 80);
-    const analysisLines = doc.splitTextToSize(analysisText, contentWidth - 20);
+    // Ensure analysis text fits within card boundaries
+    const analysisLines = doc.splitTextToSize(analysisText, contentWidth - 25);
     doc.text(analysisLines, margin + 10, yPosition + 40);
 
     yPosition += 70;
@@ -435,17 +436,18 @@ export const generatePDF = (result: AnalysisResult) => {
 
     yPosition += 25;
 
-    // Prediction box
+    // Prediction box - increased height to accommodate longer text
     doc.setFillColor(248, 249, 250);
-    doc.roundedRect(margin, yPosition, contentWidth, 70, 3, 3, "F");
+    doc.roundedRect(margin, yPosition, contentWidth, 80, 3, 3, "F");
 
     // Main prediction
     doc.setTextColor(44, 62, 80);
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
+    // Ensure prediction text fits within the available space
     const predictionLines = doc.splitTextToSize(
       analysis.aiPrediction!.prediction,
-      contentWidth - 20
+      contentWidth - 30 // Reduced width to prevent text from going out of bounds
     );
     doc.text(predictionLines, margin + 10, yPosition + 15);
 

@@ -1,5 +1,5 @@
 import { AnalysisResult as AnalysisResultType } from "../../types";
-import { generatePDF } from "../../services/pdfGenerator";
+import { PDFDownloadButton } from "../../services/ReactPDFGenerator";
 import AIPrediction from "./AIPrediction";
 
 interface AnalysisResultProps {
@@ -21,10 +21,6 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
       default:
         return "text-yellow-600 dark:text-yellow-500";
     }
-  };
-
-  const handleDownload = () => {
-    generatePDF(result);
   };
 
   const MetricCard = ({
@@ -52,25 +48,9 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
             <span className="text-accent-primary">{stockData.symbol}</span> -
             Analysis
           </h2>
-          <button
-            onClick={handleDownload}
-            className="button-primary flex items-center space-x-2 transition-all duration-300 transform hover:scale-105"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-              />
-            </svg>
-            <span>Download Report</span>
-          </button>
+
+          {/* Replace the old download button with the new PDF component */}
+          <PDFDownloadButton result={result} />
         </div>
 
         <div className="flex items-center space-x-4">
@@ -101,7 +81,7 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
 
         <MetricCard
           title="Price Analysis"
-          value={`₹${stockData.currentPrice.toFixed(2)}`}
+          value={`Rs ${stockData.currentPrice.toFixed(2)}`}
           description={analysis.maAnalysis}
         />
 
@@ -124,19 +104,19 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ result }) => {
           <div className="flex justify-between items-center">
             <span className="text-text-secondary">Upper Band</span>
             <span className="text-text-primary font-medium text-green-600 dark:text-green-400">
-              ₹{stockData.bollingerBands.upper.toFixed(2)}
+              Rs {stockData.bollingerBands.upper.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-text-secondary">Current Price</span>
             <span className="text-text-primary font-medium">
-              ₹{stockData.currentPrice.toFixed(2)}
+              Rs {stockData.currentPrice.toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-text-secondary">Lower Band</span>
             <span className="text-text-primary font-medium text-red-600 dark:text-red-400">
-              ₹{stockData.bollingerBands.lower.toFixed(2)}
+              Rs {stockData.bollingerBands.lower.toFixed(2)}
             </span>
           </div>
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">

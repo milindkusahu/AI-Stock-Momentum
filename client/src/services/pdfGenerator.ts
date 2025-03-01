@@ -223,7 +223,6 @@ export const generatePDF = (result: AnalysisResult) => {
     // Column widths
     const col1Width = 40;
     const col2Width = 40;
-    const col3Width = contentWidth - col1Width - col2Width;
 
     // Draw header cells
     doc.text("Indicator", margin + cellPadding, yPosition + 7);

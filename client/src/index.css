@@ -1,38 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
-
 @layer base {
+  :root {
+    --background-primary: 255 255 255;
+    --background-secondary: 249 250 251;
+    --text-primary: 17 24 39;
+    --text-secondary: 107 114 128;
+    --accent-primary: 37 99 235;
+    --accent-secondary: 219 234 254;
+  }
+
+  :root[class~="dark"] {
+    --background-primary: 17 24 39;
+    --background-secondary: 31 41 55;
+    --text-primary: 249 250 251;
+    --text-secondary: 156 163 175;
+    --accent-primary: 59 130 246;
+    --accent-secondary: 30 58 138;
+  }
+
   body {
     font-family: "Poppins", sans-serif;
+    @apply bg-background-primary text-text-primary transition-colors duration-200;
   }
 }
 
 @layer components {
-  .gradient-bg {
-    background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
-  }
-
   .card {
-    @apply bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl;
+    @apply bg-background-primary rounded-xl shadow-lg p-6 transition-all duration-300 
+           hover:shadow-xl dark:shadow-gray-900/30;
   }
 
   .button-primary {
-    @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-medium 
-           transition-all duration-300 hover:bg-blue-700 
-           focus:ring-4 focus:ring-blue-200 focus:outline-none;
+    @apply px-6 py-3 bg-accent-primary text-white rounded-lg font-medium 
+           transition-all duration-300 hover:bg-opacity-90
+           focus:ring-4 focus:ring-accent-secondary focus:outline-none;
   }
 
   .input-field {
     @apply w-full px-4 py-3 rounded-lg border border-gray-300 
-           focus:ring-2 focus:ring-blue-400 focus:border-transparent 
-           transition-all duration-300;
+           dark:border-gray-600 dark:bg-background-secondary
+           focus:ring-2 focus:ring-accent-primary focus:border-transparent 
+           transition-all duration-300 dark:text-white;
   }
 }
 
-/* Animations */
+/* Your existing animations */
 @keyframes fadeIn {
   from {
     opacity: 0;

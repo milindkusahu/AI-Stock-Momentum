@@ -17,6 +17,9 @@ export const generatePDF = (result: AnalysisResult) => {
   const margin = 15;
   const contentWidth = pageWidth - 2 * margin;
 
+  // Use "Rs" instead of rupee symbol to avoid encoding issues
+  const currencySymbol = "Rs ";
+
   let yPosition = 15;
 
   // Helper function to check and add new page if needed
@@ -155,7 +158,7 @@ export const generatePDF = (result: AnalysisResult) => {
     doc.setTextColor(44, 62, 80);
     doc.setFont("helvetica", "bold");
     doc.text(
-      `₹${stockData.currentPrice.toFixed(2)}`,
+      `${currencySymbol}${stockData.currentPrice.toFixed(2)}`,
       margin + colWidth / 2,
       yPosition,
       { align: "center" }
@@ -247,7 +250,7 @@ export const generatePDF = (result: AnalysisResult) => {
       },
       {
         name: "Moving Avg (50d)",
-        value: `₹${stockData.movingAverage50.toFixed(2)}`,
+        value: `${currencySymbol}${stockData.movingAverage50.toFixed(2)}`,
         signal: getSignalText(analysis.maAnalysis),
       },
       {
@@ -257,7 +260,9 @@ export const generatePDF = (result: AnalysisResult) => {
       },
       {
         name: "Bollinger",
-        value: `Mid: ₹${stockData.bollingerBands.middle.toFixed(2)}`,
+        value: `Mid: ${currencySymbol}${stockData.bollingerBands.middle.toFixed(
+          2
+        )}`,
         signal: getSignalText(analysis.bollingerAnalysis),
       },
     ];
@@ -358,7 +363,7 @@ export const generatePDF = (result: AnalysisResult) => {
 
     addIndicatorCard(
       "Moving Average (50-day)",
-      `₹${stockData.movingAverage50.toFixed(2)}`,
+      `${currencySymbol}${stockData.movingAverage50.toFixed(2)}`,
       analysis.maAnalysis
     );
 
@@ -370,11 +375,13 @@ export const generatePDF = (result: AnalysisResult) => {
 
     addIndicatorCard(
       "Bollinger Bands",
-      `Upper: ₹${stockData.bollingerBands.upper.toFixed(
+      `Upper: ${currencySymbol}${stockData.bollingerBands.upper.toFixed(
         2
-      )} | Middle: ₹${stockData.bollingerBands.middle.toFixed(
+      )} | Middle: ${currencySymbol}${stockData.bollingerBands.middle.toFixed(
         2
-      )} | Lower: ₹${stockData.bollingerBands.lower.toFixed(2)}`,
+      )} | Lower: ${currencySymbol}${stockData.bollingerBands.lower.toFixed(
+        2
+      )}`,
       analysis.bollingerAnalysis
     );
   }
@@ -466,7 +473,9 @@ export const generatePDF = (result: AnalysisResult) => {
       doc.setFontSize(12);
       doc.setTextColor(44, 62, 80);
       doc.text(
-        `Target Price: ₹${analysis.aiPrediction!.shortTermTarget.toFixed(2)}`,
+        `Target Price: ${currencySymbol}${analysis.aiPrediction!.shortTermTarget.toFixed(
+          2
+        )}`,
         margin + 10,
         yPosition
       );

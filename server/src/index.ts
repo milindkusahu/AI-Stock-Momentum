@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import { config } from './config/config';
 import { StockController } from './controllers/stockController';
-import { rateLimiter } from './middleware/rateLimiter';
 
 const app = express();
 
@@ -14,7 +13,7 @@ app.use(express.json());
 const stockController = new StockController();
 
 // Routes
-app.get('/api/stock/:symbol', rateLimiter.middleware.bind(rateLimiter), stockController.analyzeStock);
+app.get('/api/stock/:symbol', stockController.analyzeStock);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
